@@ -1,0 +1,41 @@
+name: Java Linter
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  checkstyle:
+    name: Run Checkstyle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Checkstyle JAR
+        id: checkstyle-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.checkstyle
+          key: checkstyle-10.16.0
+
+      - name: Download Checkstyle (if not cached)
+        if: steps.checkstyle-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.checkstyle
+          curl -L -o ~/.checkstyle/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.16.0/checkstyle-10.16.0-all.jar
+          curl -L -o ~/.checkstyle/google_checks.xml https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml
+
+      - name: Run Checkstyle
+        run: |
+          java -jar ~/.checkstyle/checkstyle.jar -c ~/.checkstyle/google_checks.xml ./src
