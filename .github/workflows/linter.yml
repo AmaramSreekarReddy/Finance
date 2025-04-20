@@ -38,4 +38,4 @@ jobs:
 
       - name: Run Checkstyle
         run: |
-          java -jar ~/.checkstyle/checkstyle.jar -c ~/.checkstyle/google_checks.xml ./src
+          java -jar ~/.checkstyle/checkstyle.jar -c ~/.checkstyle/google_checks.xml ./
